@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 	{
 		if (AmListening)
 		{
-			char message[C_BUFFER];
+			char message[C_BUFFER] = { '\0' };
 
 			if (SDLNet_TCP_Recv(ClientSocket, message, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 			{

@@ -12,8 +12,8 @@ TCPsocket Socket = nullptr;
 bool AmListening = true;
 bool AmRunning = true;
 
-const int PORT = 1234;
-const int BUFFER = 2000;
+const int C_PORT = 1234;
+const int C_BUFFER = 2000;
 int main(int argc, char* argv[])
 {
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	if (SDLNet_ResolveHost(&ip, "127.0.0.1", PORT) == -1)//the port  //null because we are the server //127.0.0.1 = own machine
+	if (SDLNet_ResolveHost(&ip, "127.0.0.1", C_PORT) == -1)//the port  //null because we are the server //127.0.0.1 = own machine
 	{
 		std::cout << "Error creating a client" << std::endl;
 		system("Pause");
@@ -58,9 +58,9 @@ int main(int argc, char* argv[])
 	{
 		if (AmListening) 
 		{
-			char message[BUFFER];
+			char message[C_BUFFER] = {'\0'};
 
-			if (SDLNet_TCP_Recv(Socket, message, BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+			if (SDLNet_TCP_Recv(Socket, message, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 			{
 				std::cout << "Error recieveing message" << std::endl;
 				system("Pause");
