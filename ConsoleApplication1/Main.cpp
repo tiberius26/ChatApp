@@ -14,7 +14,11 @@ TCPsocket ClientSocket = nullptr;
 //Message to be sent to client(s)
 std::string message;
 
-const int PORT = 1234;
+bool AmListening = true;
+bool AmRunning = true;
+
+const int C_PORT = 1234;
+const int C_BUFFER = 2000;
 int main(int argc, char* argv[])
 {
 
@@ -35,7 +39,7 @@ int main(int argc, char* argv[])
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
 
-	if (SDLNet_ResolveHost(&ip, nullptr, PORT) == -1)//the port  //null because we are the server
+	if (SDLNet_ResolveHost(&ip, nullptr, C_PORT) == -1)//the port  //null because we are the server
 	{
 		std::cout << "Error creating a server" << std::endl;
 		system("Pause");
@@ -68,8 +72,6 @@ int main(int argc, char* argv[])
 
 	message = "Welcome to the chat";
 
-
-
 	//we need length of message in order to send data
 	int MessageLength = message.length() + 1; //+1 because C adds a null at the end of strings +1 terminates null aka '\0'
 	//send message via open sockets which are opened above
@@ -83,6 +85,45 @@ int main(int argc, char* argv[])
 		std::cout << "Everything is fine" << std::endl;
 		system("Pause");
 	}
+
+	while (AmRunning)
+	{
+		if (AmListening)
+		{
+			char message[C_BUFFER];
+
+			if (SDLNet_TCP_Recv(ClientSocket, message, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+			{
+				std::cout << "Error recieveing message" << std::endl;
+				system("Pause");
+			}
+			else
+			{
+				std::cout << std::endl << message << std::endl;
+				system("Pause");
+				AmListening = false;
+			}
+		}
+		else
+		{
+			std::cout << "Say:" << std::endl;
+			std::string Message;
+			std::cin >> Message;
+			MessageLength = Message.length();
+			if (SDLNet_TCP_Send(ClientSocket, Message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
+			{
+				std::cout << "Error sending message to client" << std::endl;
+				system("Pause");
+			}
+			else
+			{
+				std::cout << "Message sent" << std::endl;
+				system("Pause");
+				AmListening = true;
+			}
+		}
+	}
+
 
 	SDLNet_TCP_Close(ClientSocket);
 	

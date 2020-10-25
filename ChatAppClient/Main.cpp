@@ -9,7 +9,8 @@ IPaddress ip; //host and port number essentially
 //sockets to transfer data to server
 TCPsocket Socket = nullptr;
 
-
+bool AmListening = true;
+bool AmRunning = true;
 
 const int PORT = 1234;
 const int BUFFER = 2000;
@@ -53,19 +54,42 @@ int main(int argc, char* argv[])
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
 	//Place to store message;
-
-	char message[BUFFER];
-
-	
-	if (SDLNet_TCP_Recv(Socket, message, BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+	while (AmRunning)
 	{
-		std::cout << "Error recieveing message" << std::endl;
-		system("Pause");
-	}
-	else
-	{
-		std::cout << message << std::endl;
-		system("Pause");
+		if (AmListening) 
+		{
+			char message[BUFFER];
+
+			if (SDLNet_TCP_Recv(Socket, message, BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+			{
+				std::cout << "Error recieveing message" << std::endl;
+				system("Pause");
+			}
+			else
+			{
+				std::cout << std::endl << message << std::endl;
+				system("Pause");
+				AmListening = false;
+			}
+		}
+		else 
+		{
+			std::cout << "Say:" ;
+			std::string Message;
+			std::cin >> Message;
+			int MessageLength = Message.length();
+			if (SDLNet_TCP_Send(Socket, Message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
+			{
+				std::cout << "Error sending message to server" << std::endl;
+				system("Pause");
+			}
+			else
+			{
+				std::cout << "Message sent" << std::endl;
+				system("Pause");
+				AmListening = true;
+			}
+		}
 	}
 
 	SDLNet_TCP_Close(Socket);
