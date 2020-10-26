@@ -90,16 +90,16 @@ int main(int argc, char* argv[])
 	{
 		if (AmListening)
 		{
-			char message[C_BUFFER] = { '\0' };
+			char RecievedMessage[C_BUFFER] = { '\0' };
 
-			if (SDLNet_TCP_Recv(ClientSocket, message, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+			if (SDLNet_TCP_Recv(ClientSocket, RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 			{
 				std::cout << "Error recieveing message" << std::endl;
 				system("Pause");
 			}
 			else
 			{
-				std::cout << std::endl << message << std::endl;
+				std::cout << std::endl << RecievedMessage << std::endl;
 				system("Pause");
 				AmListening = false;
 			}
@@ -108,8 +108,8 @@ int main(int argc, char* argv[])
 		{
 			std::cout << "Say:" << std::endl;
 			std::string Message;
-			std::cin >> Message;
-			MessageLength = Message.length();
+			std::getline(std::cin, Message);
+			MessageLength = Message.length() + 1;
 			if (SDLNet_TCP_Send(ClientSocket, Message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
 			{
 				std::cout << "Error sending message to client" << std::endl;
@@ -120,6 +120,7 @@ int main(int argc, char* argv[])
 				std::cout << "Message sent" << std::endl;
 				system("Pause");
 				AmListening = true;
+				Message.clear();
 			}
 		}
 	}
