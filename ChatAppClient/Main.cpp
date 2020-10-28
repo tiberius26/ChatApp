@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_net.h>
+#include "TTools.h"
 
 //struct to store host adress(ip) and port number
 IPaddress ip; //host and port number essentially
@@ -16,34 +17,31 @@ const int C_PORT = 1234;
 const int C_BUFFER = 2000;
 int main(int argc, char* argv[])
 {
-
+	TTools* Tools = new TTools;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 	{
-		std::cout << "SDL could not initialize" << std::endl;
-		system("Pause");
+		Tools->Debug("SDL could not initialize", RED);
 		return 0;
 	}
 	if (SDLNet_Init() == -1)
 	{
-		std::cout << "SDLNet could not initialize" << std::endl;
-		system("Pause");
+		Tools->Debug("SDLNet could not initialize", RED);
 		return 0;
 	}
 
 
 	if (SDLNet_ResolveHost(&ip, "127.0.0.1", C_PORT) == -1)//the port  //null because we are the server //127.0.0.1 = own machine
 	{
-		std::cout << "Error creating a client" << std::endl;
-		system("Pause");
+		Tools->Debug("Error creating a client", RED);
 		return 0;
 	}
 
 	Socket = SDLNet_TCP_Open(&ip);//nullptr;
 
-	if (!Socket) {
-		std::cout << "Error opening socket for connection" << std::endl;
-		system("Pause");
+	if (!Socket) 
+	{
+		Tools->Debug("Error opening socket for connection", RED);
 		return 0;
 	}
 
@@ -62,8 +60,7 @@ int main(int argc, char* argv[])
 
 			if (SDLNet_TCP_Recv(Socket, RevievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 			{
-				std::cout << "Error recieveing message" << std::endl;
-				system("Pause");
+				Tools->Debug("Error recieveing message", YELLOW);
 			}
 			else
 			{
@@ -80,13 +77,11 @@ int main(int argc, char* argv[])
 			int MessageLength = Message.length() + 1;
 			if (SDLNet_TCP_Send(Socket, Message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
 			{
-				std::cout << "Error sending message to server" << std::endl;
-				system("Pause");
+				Tools->Debug("Error sending message to server", YELLOW);
 			}
 			else
 			{
-				std::cout << "Message sent" << std::endl;
-				system("Pause");
+				Tools->Log("Message sent");
 				Message.clear();
 				AmListening = true;
 			}
@@ -99,10 +94,7 @@ int main(int argc, char* argv[])
 	//closing
 	SDLNet_Quit();
 	SDL_Quit();
-
-
-
-
+	delete Tools;
 
 	system("Pause");
 	return 0;

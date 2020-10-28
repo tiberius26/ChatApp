@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_net.h>
+#include "TTools.h"
 
 //struct to store host adress(ip) and port number
 IPaddress ip; //host and port number essentially
@@ -21,18 +22,16 @@ const int C_PORT = 1234;
 const int C_BUFFER = 2000;
 int main(int argc, char* argv[])
 {
-
+	TTools* Tools = new TTools;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) 
 	{
-		std::cout << "SDL could not initialize" << std::endl;
-		system("Pause");
+		Tools->Debug("SDL could not initialize", RED);
 		return 0;
 	}
 	if (SDLNet_Init() == -1)
 	{
-		std::cout << "SDLNet could not initialize" << std::endl;
-		system("Pause");
+		Tools->Debug("SDLNet could not initialize", RED);
 		return 0;
 	}
 	std::cout << "========================================" << std::endl;
@@ -41,29 +40,26 @@ int main(int argc, char* argv[])
 
 	if (SDLNet_ResolveHost(&ip, nullptr, C_PORT) == -1)//the port  //null because we are the server
 	{
-		std::cout << "Error creating a server" << std::endl;
-		system("Pause");
+		Tools->Debug("Error creating a server", RED);
 		return 0;
 	}
 
 	ListenSocket = SDLNet_TCP_Open(&ip);//nullptr;
 
 	if (!ListenSocket) {
-		std::cout << "Error opening socket for connection" << std::endl;
-		system("Pause");
+		Tools->Debug("Error opening socket for connection", RED);
 		return 0;
 	}
 	std::cout << "Server waiting for connection from client" << std::endl;
 	while (!ClientSocket) //waits for client to connect
 	{
 		ClientSocket = SDLNet_TCP_Accept(ListenSocket);
-		std::cout << ".........." << std::endl;
+		std::cout << "......"<<std::endl;
 		SDL_Delay(500);
 	}
 
 	SDLNet_TCP_Close(ListenSocket); //Keep it open for multiple clients
-	std::cout << "Client connected!" << std::endl;
-	system("Pause");
+	Tools->Log("Client connected!");
 	system("cls");
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
@@ -77,13 +73,11 @@ int main(int argc, char* argv[])
 	//send message via open sockets which are opened above
 	if (SDLNet_TCP_Send(ClientSocket, message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
 	{
-		std::cout << "Error sending message to client" << std::endl;
-		system("Pause");
+		Tools->Debug("Error sending message to client", YELLOW);
 	}
 	else 
 	{
-		std::cout << "Everything is fine" << std::endl;
-		system("Pause");
+		Tools->Log("Everything is fine");
 	}
 
 	while (AmRunning)
@@ -94,13 +88,12 @@ int main(int argc, char* argv[])
 
 			if (SDLNet_TCP_Recv(ClientSocket, RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 			{
-				std::cout << "Error recieveing message" << std::endl;
-				system("Pause");
+				Tools->Debug("Error recieveing message", YELLOW);
 			}
 			else
 			{
 				std::cout << std::endl << RecievedMessage << std::endl;
-				system("Pause");
+				system("pause");
 				AmListening = false;
 			}
 		}
@@ -112,13 +105,12 @@ int main(int argc, char* argv[])
 			MessageLength = Message.length() + 1;
 			if (SDLNet_TCP_Send(ClientSocket, Message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
 			{
-				std::cout << "Error sending message to client" << std::endl;
-				system("Pause");
+				Tools->Debug("Error sending message to client", YELLOW);
+
 			}
 			else
 			{
-				std::cout << "Message sent" << std::endl;
-				system("Pause");
+				Tools->Log("Message sent");
 				AmListening = true;
 				Message.clear();
 			}
@@ -132,7 +124,7 @@ int main(int argc, char* argv[])
 	//closing
 	SDLNet_Quit();
 	SDL_Quit();
-
+	delete Tools;
 
 	/*while (1)
 	{
