@@ -135,9 +135,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TCPManager.cpp" />
     <ClCompile Include="TTools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="TCPManager.h" />
     <ClInclude Include="TTools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

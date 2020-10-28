@@ -3,14 +3,12 @@
 #include <SDL.h>
 #include <SDL_net.h>
 #include "TTools.h"
+#include "TCPManager.h"
 
 //struct to store host adress(ip) and port number
-IPaddress ip; //host and port number essentially
 
-//sockets to transfer data to server
-TCPsocket Socket = nullptr;
 
-bool AmListening = true;
+bool AmReceiving = true;
 bool AmRunning = true;
 
 const int C_PORT = 1234;
@@ -18,82 +16,47 @@ const int C_BUFFER = 2000;
 int main(int argc, char* argv[])
 {
 	TTools* Tools = new TTools;
-
-	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
-	{
-		Tools->Debug("SDL could not initialize", RED);
-		return 0;
-	}
-	if (SDLNet_Init() == -1)
-	{
-		Tools->Debug("SDLNet could not initialize", RED);
-		return 0;
-	}
-
-
-	if (SDLNet_ResolveHost(&ip, "127.0.0.1", C_PORT) == -1)//the port  //null because we are the server //127.0.0.1 = own machine
-	{
-		Tools->Debug("Error creating a client", RED);
-		return 0;
-	}
-
-	Socket = SDLNet_TCP_Open(&ip);//nullptr;
-
-	if (!Socket) 
-	{
-		Tools->Debug("Error opening socket for connection", RED);
-		return 0;
-	}
-
-	std::cout << "Connected!" << std::endl;
-	system("Pause");
+	TCPManager ClientSide;
+	ClientSide.Initialize();
+	ClientSide.OpenSocket();
 	system("cls");
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
-	//Place to store message;
-	while (AmRunning)
-	{
-		if (AmListening) 
-		{
-			char RevievedMessage[C_BUFFER] = {'\0'};
 
-			if (SDLNet_TCP_Recv(Socket, RevievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+	std::string SentMessage;
+	std::string RecievedMessage;
+	int MessageLength = 0;
+	while (SentMessage != "end" && RecievedMessage != "end")
+	{
+		if (AmReceiving)
+		{
+			if (ClientSide.Receive(RecievedMessage))
 			{
-				Tools->Debug("Error recieveing message", YELLOW);
+				std::cout << std::endl << RecievedMessage << std::endl;
+				system("pause");
+				AmReceiving = false;
 			}
-			else
-			{
-				std::cout << std::endl << RevievedMessage << std::endl;
-				system("Pause");
-				AmListening = false;
-			}
+			else { Tools->Debug("Can't recieve message", RED); }
+
 		}
 		else 
 		{
-			std::cout << "Say:" ;
-			std::string Message;
-			std::getline(std::cin, Message);
-			int MessageLength = Message.length() + 1;
-			if (SDLNet_TCP_Send(Socket, Message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
-			{
-				Tools->Debug("Error sending message to server", YELLOW);
-			}
-			else
+			std::cout << "Say: ";
+			std::getline(std::cin, SentMessage);
+			MessageLength = SentMessage.length() + 1;
+
+			if (ClientSide.Send(SentMessage))
 			{
 				Tools->Log("Message sent");
-				Message.clear();
-				AmListening = true;
+				AmReceiving = true;
 			}
+			SentMessage.clear();
 		}
 	}
 
-	SDLNet_TCP_Close(Socket);
-
-
-	//closing
-	SDLNet_Quit();
-	SDL_Quit();
+	ClientSide.CloseSocket();
+	ClientSide.ShutDown();
 	delete Tools;
 
 	system("Pause");

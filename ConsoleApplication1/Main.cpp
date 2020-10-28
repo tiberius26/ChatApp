@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_net.h>
 #include "TTools.h"
+#include "TCPManager.h"
 
 //struct to store host adress(ip) and port number
 IPaddress ip; //host and port number essentially
@@ -15,7 +16,7 @@ TCPsocket ClientSocket = nullptr;
 //Message to be sent to client(s)
 std::string message;
 
-bool AmListening = true;
+bool AmReceiving = true;
 bool AmRunning = true;
 
 const int C_PORT = 1234;
@@ -23,43 +24,16 @@ const int C_BUFFER = 2000;
 int main(int argc, char* argv[])
 {
 	TTools* Tools = new TTools;
+	TCPManager ServerSide;
+	ServerSide.Initialize();
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) 
-	{
-		Tools->Debug("SDL could not initialize", RED);
-		return 0;
-	}
-	if (SDLNet_Init() == -1)
-	{
-		Tools->Debug("SDLNet could not initialize", RED);
-		return 0;
-	}
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
 
-	if (SDLNet_ResolveHost(&ip, nullptr, C_PORT) == -1)//the port  //null because we are the server
-	{
-		Tools->Debug("Error creating a server", RED);
-		return 0;
-	}
+	ServerSide.OpenSocket();
+	ServerSide.ListenSocket();
 
-	ListenSocket = SDLNet_TCP_Open(&ip);//nullptr;
-
-	if (!ListenSocket) {
-		Tools->Debug("Error opening socket for connection", RED);
-		return 0;
-	}
-	std::cout << "Server waiting for connection from client" << std::endl;
-	while (!ClientSocket) //waits for client to connect
-	{
-		ClientSocket = SDLNet_TCP_Accept(ListenSocket);
-		std::cout << "......"<<std::endl;
-		SDL_Delay(500);
-	}
-
-	SDLNet_TCP_Close(ListenSocket); //Keep it open for multiple clients
-	Tools->Log("Client connected!");
 	system("cls");
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
@@ -71,68 +45,45 @@ int main(int argc, char* argv[])
 	//we need length of message in order to send data
 	int MessageLength = message.length() + 1; //+1 because C adds a null at the end of strings +1 terminates null aka '\0'
 	//send message via open sockets which are opened above
-	if (SDLNet_TCP_Send(ClientSocket, message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
+	if (ServerSide.Send(message) < MessageLength)
 	{
-		Tools->Debug("Error sending message to client", YELLOW);
+		Tools->Log("Everything is fine"); 
 	}
-	else 
-	{
-		Tools->Log("Everything is fine");
-	}
+	
+	std::string SentMessage;
+	std::string RecievedMessage;
 
-	while (AmRunning)
+	while (SentMessage != "end" && RecievedMessage != "end")
 	{
-		if (AmListening)
+		if (AmReceiving)
 		{
-			char RecievedMessage[C_BUFFER] = { '\0' };
-
-			if (SDLNet_TCP_Recv(ClientSocket, RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
-			{
-				Tools->Debug("Error recieveing message", YELLOW);
-			}
-			else
+			if (ServerSide.Receive(RecievedMessage)) 
 			{
 				std::cout << std::endl << RecievedMessage << std::endl;
 				system("pause");
-				AmListening = false;
+				AmReceiving = false;
 			}
+			else { Tools->Debug("Can't recieve message", RED); }
+
 		}
 		else
 		{
-			std::cout << "Say:" << std::endl;
-			std::string Message;
-			std::getline(std::cin, Message);
-			MessageLength = Message.length() + 1;
-			if (SDLNet_TCP_Send(ClientSocket, Message.c_str(), MessageLength) < MessageLength) //is the retun value is < length of message it failled/ there's an error
-			{
-				Tools->Debug("Error sending message to client", YELLOW);
+			std::cout << "Say: ";
+			std::getline(std::cin, SentMessage);
+			MessageLength = SentMessage.length() + 1;
 
-			}
-			else
+			if (ServerSide.Send(SentMessage))
 			{
 				Tools->Log("Message sent");
-				AmListening = true;
-				Message.clear();
+				AmReceiving = true;
 			}
+			SentMessage.clear();
 		}
 	}
 
-
-	SDLNet_TCP_Close(ClientSocket);
-	
-
-	//closing
-	SDLNet_Quit();
-	SDL_Quit();
+	ServerSide.CloseSocket();
+	ServerSide.ShutDown();
 	delete Tools;
-
-	/*while (1)
-	{
-		std::cout << ".........." << std::endl;
-		SDL_Delay(500);
-	}*/
-
-
 	system("Pause");
 	return 0;
 }
