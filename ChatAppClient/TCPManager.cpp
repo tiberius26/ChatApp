@@ -67,3 +67,16 @@ void TCPManager::ShutDown()
 	SDL_Quit();
 	delete Tools;
 }
+
+TCPManager::TCPManager()
+{
+	M_Socket = nullptr;
+	M_MessageLength = 0;
+	Tools = nullptr;
+	M_IP = {0,0};
+}
+
+TCPManager::~TCPManager()
+{
+}
+

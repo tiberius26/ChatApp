@@ -7,9 +7,6 @@
 #include "Chatting.h"
 
 //struct to store host adress(ip) and port number
-
-
-
 int main(int argc, char* argv[])
 {
 	TTools* Tools = new TTools;

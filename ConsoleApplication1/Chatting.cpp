@@ -26,7 +26,8 @@ void Chatting::ChatLoop(TCPManager& ServerSide)
 				M_Tools->Log("Message sent");
 				M_AmReceiving = true;
 			}
-			M_SentMessage.clear();
+			if (M_SentMessage != "end") { M_SentMessage.clear();}
+			
 		}
 	}
 }

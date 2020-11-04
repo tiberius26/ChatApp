@@ -14,23 +14,22 @@ public:
 	bool Receive(std::string& message);
 	void CloseSocket();
 	void ShutDown();
+	TCPManager();
+	~TCPManager();
 private:
 	IPaddress M_IP;
 
-	TCPsocket M_ListenSocket = nullptr;
-	TCPsocket M_ClientSocket = nullptr;
+	TCPsocket M_ListenSocket;
+	TCPsocket M_ClientSocket;
 
 	std::string message;
 
-	int M_MessageLength = 0;
-
-	bool AmReceiving = true;
-	bool AmRunning = true;
+	int M_MessageLength;
 
 	const int C_PORT = 1234;
 	const int C_BUFFER = 2000;
 
-	TTools* Tools = nullptr;
+	TTools* Tools;
 
 };
 
