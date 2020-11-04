@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Chatting.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TCPManager.cpp" />
     <ClCompile Include="TTools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Chatting.h" />
     <ClInclude Include="TCPManager.h" />
     <ClInclude Include="TTools.h" />
   </ItemGroup>

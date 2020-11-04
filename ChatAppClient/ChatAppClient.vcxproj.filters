@@ -24,12 +24,18 @@
     <ClCompile Include="TCPManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Chatting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TCPManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Chatting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
