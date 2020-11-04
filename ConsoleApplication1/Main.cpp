@@ -4,7 +4,6 @@
 #include <SDL_net.h>
 #include "TTools.h"
 #include "TCPManager.h"
-
 //struct to store host adress(ip) and port number
 IPaddress ip; //host and port number essentially
 
@@ -26,7 +25,7 @@ int main(int argc, char* argv[])
 	TTools* Tools = new TTools;
 	TCPManager ServerSide;
 	ServerSide.Initialize();
-
+	
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
@@ -45,7 +44,7 @@ int main(int argc, char* argv[])
 	//we need length of message in order to send data
 	int MessageLength = message.length() + 1; //+1 because C adds a null at the end of strings +1 terminates null aka '\0'
 	//send message via open sockets which are opened above
-	if (ServerSide.Send(message) < MessageLength)
+	if (ServerSide.Send(message))
 	{
 		Tools->Log("Everything is fine"); 
 	}
@@ -70,7 +69,6 @@ int main(int argc, char* argv[])
 		{
 			std::cout << "Say: ";
 			std::getline(std::cin, SentMessage);
-			MessageLength = SentMessage.length() + 1;
 
 			if (ServerSide.Send(SentMessage))
 			{

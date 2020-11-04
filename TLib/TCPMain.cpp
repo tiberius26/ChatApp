@@ -1,6 +1,5 @@
-#include "TCPManager.h"
-
-bool TCPManager::Initialize()
+#include "TCPMain.h"
+bool TCPMain::Initialize()
 {
 	Tools = new TTools;
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
@@ -21,7 +20,7 @@ bool TCPManager::Initialize()
 	return true;
 }
 
-bool TCPManager::OpenSocket()
+bool TCPMain::OpenSocket()
 {
 	M_ListenSocket = SDLNet_TCP_Open(&M_IP);//nullptr;
 
@@ -32,7 +31,7 @@ bool TCPManager::OpenSocket()
 	return true;
 }
 
-void TCPManager::ListenSocket()
+void TCPMain::ListenSocket()
 {
 	std::cout << "Server waiting for connection from client" << std::endl;
 	while (!M_ClientSocket) //waits for client to connect
@@ -45,7 +44,7 @@ void TCPManager::ListenSocket()
 	Tools->Log("Client connected!");
 }
 
-bool TCPManager::Send(const std::string& message)
+bool TCPMain::Send(const std::string& message)
 {
 	M_MessageLength = message.length() + 1;
 	if (SDLNet_TCP_Send(M_ClientSocket, message.c_str(), M_MessageLength) < M_MessageLength) //is the retun value is < length of message it failled/ there's an error
@@ -56,7 +55,7 @@ bool TCPManager::Send(const std::string& message)
 	return true;
 }
 
-bool TCPManager::Receive(std::string& message)
+bool TCPMain::Receive(std::string& message)
 {
 	char RecievedMessage[2000] = { '\0' };
 	if (SDLNet_TCP_Recv(M_ClientSocket, RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
@@ -64,16 +63,16 @@ bool TCPManager::Receive(std::string& message)
 		Tools->Debug("Error recieveing message", YELLOW);
 		return false;
 	}
-	else{ message = RecievedMessage; }
+	else { message = RecievedMessage; }
 	return true;
 }
 
-void TCPManager::CloseSocket()
+void TCPMain::CloseSocket()
 {
 	SDLNet_TCP_Close(M_ClientSocket);
 }
 
-void TCPManager::ShutDown()
+void TCPMain::ShutDown()
 {
 	SDLNet_Quit();
 	SDL_Quit();

@@ -52,7 +52,7 @@ bool TCPManager::Receive(std::string& message)
 		Tools->Debug("Error recieveing message", YELLOW);
 		return false;
 	}
-	message = RecievedMessage;
+	else { message = RecievedMessage; }
 	return true;
 }
 
