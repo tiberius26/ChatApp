@@ -1,7 +1,5 @@
 #include <string>
 #include <iostream>
-#include <SDL.h>
-#include <SDL_net.h>
 #include "TTools.h"
 #include "TCPManager.h"
 #include "Chatting.h"
@@ -12,7 +10,8 @@ int main(int argc, char* argv[])
 	TTools* Tools = new TTools;
 	Chatting* Chat = new Chatting;
 	TCPManager ClientSide;
-	ClientSide.Initialize();
+	std::string IP = "127.0.0.1";
+	ClientSide.Initialize(IP.c_str(), 1234);
 	ClientSide.OpenSocket();
 	system("cls");
 	std::cout << "========================================" << std::endl;

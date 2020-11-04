@@ -9,7 +9,7 @@ void Chatting::ChatLoop(TCPManager& ServerSide)
 		{
 			if (ServerSide.Receive(M_RecievedMessage))
 			{
-				std::cout << std::endl << M_RecievedMessage << std::endl;
+				std::cout << std::endl << "Received: " << M_RecievedMessage << std::endl;
 				system("pause");
 				M_AmReceiving = false;
 			}
@@ -27,7 +27,6 @@ void Chatting::ChatLoop(TCPManager& ServerSide)
 				M_AmReceiving = true;
 			}
 			if (M_SentMessage != "end") { M_SentMessage.clear();}
-			
 		}
 	}
 }

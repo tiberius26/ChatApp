@@ -7,7 +7,7 @@
 class TCPManager
 {
 public:
-	bool Initialize();
+	bool Initialize(const char* IP, int port);
 	bool OpenSocket();
 	void ListenSocket();
 	bool Send(const std::string& message);

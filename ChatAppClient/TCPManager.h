@@ -7,7 +7,7 @@
 class TCPManager
 {
 public:
-	bool Initialize();
+	bool Initialize(const char* IP, int port);
 	bool OpenSocket();
 	bool Send(const std::string& message);
 	bool Receive(std::string& message);
@@ -24,7 +24,6 @@ private:
 
 	int M_MessageLength;
 
-	const int C_PORT = 1234;
 	const int C_BUFFER = 2000;
 
 	TTools* Tools;

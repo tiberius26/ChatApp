@@ -1,6 +1,6 @@
 #include "TCPManager.h"
 
-bool TCPManager::Initialize()
+bool TCPManager::Initialize(const char* IP, int port)
 {
 	Tools = new TTools;
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
@@ -13,7 +13,7 @@ bool TCPManager::Initialize()
 		Tools->Debug("SDLNet could not initialize", RED);
 		return false;
 	}
-	if (SDLNet_ResolveHost(&M_IP, "127.0.0.1", C_PORT) == -1)//the port  //null because we are the server
+	if (SDLNet_ResolveHost(&M_IP, IP, port) == -1)//the port  //null because we are the server
 	{
 		Tools->Debug("Error creating a client", RED);
 		return false;

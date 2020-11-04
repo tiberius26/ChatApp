@@ -1,7 +1,5 @@
 #include <string>
 #include <iostream>
-#include <SDL.h>
-#include <SDL_net.h>
 #include "TTools.h"
 #include "TCPManager.h"
 #include "Chatting.h"
@@ -12,7 +10,8 @@ int main(int argc, char* argv[])
 	TTools* Tools = new TTools;
 	Chatting* Chat = new Chatting;
 	TCPManager ServerSide;
-	ServerSide.Initialize();
+	//std::string IP = nullptr;
+	ServerSide.Initialize(nullptr, 1234);
 	
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
