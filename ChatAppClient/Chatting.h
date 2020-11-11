@@ -5,7 +5,7 @@
 class Chatting
 {
 public:
-	void ChatLoop(TCPManager& ServerSide);
+	void ChatLoop(TCPManager& ClientSide);
 	Chatting();
 	void CloseChat();
 	//void Receive(TCPManager& ServerSide);
@@ -19,6 +19,6 @@ private:
 	std::thread M_SendingThread;
 	void Receive();
 	void Send();
-	TCPManager* M_ServerLocal;
+	TCPManager* M_ClientLocal;
 };
 

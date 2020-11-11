@@ -10,7 +10,10 @@ int main(int argc, char* argv[])
 	TTools* Tools = new TTools;
 	Chatting* Chat = new Chatting;
 	TCPManager ClientSide;
-	std::string IP = "127.0.0.1";
+
+	Tools->ReadFile("Data/Options.ini");
+	std::string IP = Tools->GetIp("Ip");
+	//std::string IP = "127.0.0.1";
 	ClientSide.Initialize(IP.c_str(), 1234);
 	ClientSide.OpenSocket();
 	system("cls");

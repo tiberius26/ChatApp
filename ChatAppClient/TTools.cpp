@@ -68,3 +68,22 @@ void TTools::LogNoPause(std::string Message)
 
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DEFAULT);
 }
+
+void TTools::ReadFile(std::string FilePath)
+{
+	M_OptionsFile.open(FilePath);
+	while (!M_OptionsFile.eof())//loads te stats and stores them in a map
+	{
+		std::getline(M_OptionsFile, M_OptionLine);
+		auto LineSplitter = M_OptionLine.find("=");
+		std::string Id = M_OptionLine.substr(0, LineSplitter);//where to start and how much to go
+		M_SettupOptions[Id] = M_OptionLine.substr(LineSplitter + 1, M_OptionLine.size() - (LineSplitter + 1));
+	}
+	M_OptionsFile.close();
+
+}
+
+std::string TTools::GetIp(std::string index)
+{
+	return M_SettupOptions[index];
+}
