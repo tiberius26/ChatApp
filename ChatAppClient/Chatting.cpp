@@ -2,43 +2,46 @@
 
 void Chatting::ChatLoop(TCPManager& ServerSide)
 {
-
+	M_ServerLocal = &ServerSide;
 	while (M_SentMessage != "end" && M_RecievedMessage != "end")
 	{
-		if (M_AmReceiving)
-		{
-			if (ServerSide.Receive(M_RecievedMessage))
-			{
-				std::cout << std::endl << "Received: " << M_RecievedMessage << std::endl;
-				system("pause");
-				M_AmReceiving = false;
-			}
-			else { M_Tools->Debug("Can't recieve message", RED); }
-
-		}
-		else
-		{
-			std::cout << "Say: ";
-			std::getline(std::cin, M_SentMessage);
-
-			if (ServerSide.Send(M_SentMessage))
-			{
-				M_Tools->Log("Message sent");
-				M_AmReceiving = true;
-			}
-			if (M_SentMessage != "end") { M_SentMessage.clear(); }
-		}
+		M_SendingThread = std::thread(&Chatting::Send, this);
+		M_ListeningThread = std::thread(&Chatting::Receive, this);
+		M_SendingThread.join();
+		M_ListeningThread.join();
 	}
 }
 
 Chatting::Chatting()
 {
 	M_Tools = new TTools;
-	M_AmReceiving = true;
-
+	M_ServerLocal = nullptr;
 }
 
 void Chatting::CloseChat()
 {
 	delete M_Tools;
+	M_ServerLocal = nullptr;
+}
+
+void Chatting::Receive()
+{
+	if (M_ServerLocal->Receive(M_RecievedMessage))
+	{
+		std::cout << std::endl << "Received: " << M_RecievedMessage << std::endl;
+		//system("pause");
+	}
+	else { M_Tools->Debug("Can't recieve message", RED); }
+}
+
+void Chatting::Send()
+{
+	std::cout << "Say: ";
+	std::getline(std::cin, M_SentMessage);
+
+	if (!M_ServerLocal->Send(M_SentMessage))
+	{
+		M_Tools->Debug("Can't send message", RED);
+	}
+	if (M_SentMessage != "end") { M_SentMessage.clear(); }
 }

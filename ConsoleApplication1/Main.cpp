@@ -38,7 +38,6 @@ int main(int argc, char* argv[])
 
 	Chat->ChatLoop(ServerSide);
 
-
 	ServerSide.CloseSocket();
 	ServerSide.ShutDown();
 	Chat->CloseChat();
