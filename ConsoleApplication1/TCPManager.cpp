@@ -40,7 +40,8 @@ void TCPManager::ListenSocket()
 	{
 		while (!m_ClientSocket)
 		{
-			sprintf_s(m_UserID, "User%d", m_UserCount);
+			m_UserID = "User" + std::to_string(m_UserCount);
+			//sprintf_s(m_UserID, "User%d", m_UserCount);
 			m_ClientSocket = SDLNet_TCP_Accept(m_ListenSocket);
 			m_ClientList[m_UserID] = m_ClientSocket;
 		}
@@ -61,7 +62,7 @@ bool TCPManager::Send(const std::string& message)
 	{
 		for (int i=0; i <m_UserCount; i++ )
 		{
-			sprintf_s(m_SendingLoopID, "User%d", i);
+			m_SendingLoopID = "User" + std::to_string(i);
 			m_MessageLength = message.length() + 1;
 			if (SDLNet_TCP_Send(m_ClientList[m_SendingLoopID], message.c_str(), m_MessageLength) < m_MessageLength) //is the retun value is < length of message it failled/ there's an error
 			{
@@ -70,7 +71,7 @@ bool TCPManager::Send(const std::string& message)
 			}
 		}
 	}
-	return true;
+	//return true;
 }
 
 bool TCPManager::Receive(std::string& message)
@@ -84,14 +85,15 @@ bool TCPManager::Receive(std::string& message)
 		char RecievedMessage[2000] = { '\0' };
 		for (int i = 0; i < m_UserCount; i++)
 		{
-			sprintf_s(m_RecievingLoopID, "User%d", i);
+			m_RecievingLoopID = "User" + std::to_string(i);
 			if (SDLNet_TCP_Recv(m_ClientList[m_RecievingLoopID], RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 			{
 				m_Tools->Debug("Error recieveing message", YELLOW);
 				return false;
 			}
-			else { message = RecievedMessage; return true;}
+			else { message = RecievedMessage;}
 		}
+		//return true;
 	}
 	//return false;
 }
@@ -101,7 +103,8 @@ void TCPManager::CloseSocket()
 	SDLNet_TCP_Close(m_ClientSocket);
 	for (int i = 0; i < m_UserCount; i++)
 	{
-		sprintf_s(m_ClosingSocketID, "User%d", i);
+		m_ClosingSocketID = "User" + std::to_string(i);
+		//sprintf_s(m_ClosingSocketID, "User%d", i);
 		SDLNet_TCP_Close(m_ClientList[m_ClosingSocketID]);
 	}
 }

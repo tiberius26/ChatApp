@@ -1,7 +1,8 @@
 #include "Chatting.h"
 
-void Chatting::ChatLoop(TCPManager& ClientSide)
+void Chatting::ChatLoop(TCPManager& ClientSide, std::string UserName)
 {
+	m_UserName = UserName;
 	m_ClientLocal = &ClientSide;
 	m_SendingThread = std::thread(&Chatting::Send, this);
 	m_ListeningThread = std::thread(&Chatting::Receive, this);
@@ -15,7 +16,7 @@ void Chatting::Receive()
 	{
 		if (m_ClientLocal->Receive(m_RecievedMessage))
 		{
-			std::cout << std::endl << "Received: " << m_RecievedMessage << std::endl;
+			std::cout << std::endl << m_RecievedMessage << std::endl;
 			//system("pause");
 		}
 		else { m_Tools->Debug("Can't recieve message", RED); }
@@ -26,9 +27,9 @@ void Chatting::Send()
 {
 	while (m_SentMessage != "end")
 	{
-		std::cout << "Say: ";
+		std::cout << "> ";
 		std::getline(std::cin, m_SentMessage);
-
+		m_SentMessage = m_UserName + ":" + m_SentMessage;
 		if (!m_ClientLocal->Send(m_SentMessage))
 		{
 			m_Tools->Debug("Can't send message", RED);

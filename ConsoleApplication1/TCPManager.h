@@ -34,10 +34,10 @@ private:
 	TTools* m_Tools;
 	int m_UserCount;
 	std::map<std::string, TCPsocket> m_ClientList;
-	char m_UserID[10] = { '\0' };
-	char m_SendingLoopID[10] = { '\0' };
-	char m_RecievingLoopID[10] = { '\0' };
-	char m_ClosingSocketID[10] = { '\0' };
+	std::string m_UserID;
+	std::string m_SendingLoopID;
+	std::string m_RecievingLoopID;
+	std::string m_ClosingSocketID;
 
 };
 

@@ -20,5 +20,6 @@ private:
 	void Receive();
 	void Send();
 	TCPManager* m_ServerLocal;
+
 };
 

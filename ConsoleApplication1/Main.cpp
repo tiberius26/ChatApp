@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	//send message via open sockets which are opened above
 	if (ServerSide->Send(message))
 	{
-		Tools->Log("Everything is fine"); 
+		Tools->LogNoPause("Welcome message sent"); 
 	}
 	
 	Chat->ChatLoop(*ServerSide);

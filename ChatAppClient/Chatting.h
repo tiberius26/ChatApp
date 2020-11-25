@@ -5,7 +5,7 @@
 class Chatting
 {
 public:
-	void ChatLoop(TCPManager& ClientSide);
+	void ChatLoop(TCPManager& ClientSide, std::string UserName);
 	Chatting();
 	void CloseChat();
 	//void Receive(TCPManager& ServerSide);
@@ -20,5 +20,6 @@ private:
 	void Receive();
 	void Send();
 	TCPManager* m_ClientLocal;
+	std::string m_UserName;
 };
 

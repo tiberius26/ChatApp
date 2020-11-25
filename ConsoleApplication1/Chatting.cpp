@@ -14,13 +14,18 @@ void Chatting::Receive()
 	while (m_RecievedMessage != "end")
 	{
 
-		if (m_ServerLocal->Receive(m_RecievedMessage))
+		if (m_ServerLocal->Receive(m_RecievedMessage) && m_RecievedMessage != "")
 		{
 
-			if (m_RecievedMessage != "") 
+			if (!m_ServerLocal->Send(m_RecievedMessage))
 			{
-				std::cout << std::endl << "Received: " << m_RecievedMessage << std::endl;
+				m_Tools->Debug("Can't relay the message", RED);
 			}
+			//else 
+			//{
+			//	m_Tools->LogNoPause("Received client Message");
+			//}
+			//std::cout << std::endl << "Received: " << m_RecievedMessage << std::endl;
 		}
 		else { m_Tools->Debug("Can't recieve message", RED); }
 	}
@@ -28,16 +33,16 @@ void Chatting::Receive()
 
 void Chatting::Send()
 {
-	while (m_SentMessage != "end")
+	while (m_RecievedMessage != "end")
 	{
-		std::cout << "Say: ";
-		std::getline(std::cin, m_SentMessage);
-
-		if (!m_ServerLocal->Send(m_SentMessage))
+		if (m_RecievedMessage != "")
 		{
-			m_Tools->Debug("Can't send message", RED);
+			if (!m_ServerLocal->Send(m_RecievedMessage))
+			{
+				m_Tools->Debug("Can't send message", RED);
+			}
+			if (m_RecievedMessage != "end") { m_RecievedMessage.clear(); }
 		}
-		if (m_SentMessage != "end") { m_SentMessage.clear(); }
 	}
 }
 
