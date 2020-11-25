@@ -16,13 +16,13 @@ public:
 	TCPManager();
 	~TCPManager();
 private:
-	IPaddress M_IP;
+	IPaddress m_IP;
 
-	TCPsocket M_Socket;
+	TCPsocket m_Socket;
 
 	std::string message;
 
-	int M_MessageLength;
+	int m_MessageLength;
 
 	const int C_BUFFER = 2000;
 

@@ -12,13 +12,13 @@ public:
 	//void Send(TCPManager& ServerSide);
 
 private:
-	std::string M_SentMessage;
-	std::string M_RecievedMessage;
-	TTools* M_Tools;
-	std::thread M_ListeningThread;
-	std::thread M_SendingThread;
+	std::string m_SentMessage;
+	std::string m_RecievedMessage;
+	TTools* m_Tools;
+	std::thread m_ListeningThread;
+	std::thread m_SendingThread;
 	void Receive();
 	void Send();
-	TCPManager* M_ServerLocal;
+	TCPManager* m_ServerLocal;
 };
 

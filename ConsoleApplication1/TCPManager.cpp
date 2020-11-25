@@ -2,20 +2,21 @@
 
 bool TCPManager::Initialize(const char* IP, int port)
 {
-	Tools = new TTools;
+
+	m_Tools = new TTools;
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 	{
-		Tools->Debug("SDL could not initialize", RED);
+		m_Tools->Debug("SDL could not initialize", RED);
 		return false;
 	}
 	if (SDLNet_Init() == -1)
 	{
-		Tools->Debug("SDLNet could not initialize", RED);
+		m_Tools->Debug("SDLNet could not initialize", RED);
 		return false;
 	}
-	if (SDLNet_ResolveHost(&M_IP, IP, port) == -1)//the port  //null because we are the server
+	if (SDLNet_ResolveHost(&m_IP, IP, port) == -1)//the port  //null because we are the server
 	{
-		Tools->Debug("Error creating a server", RED);
+		m_Tools->Debug("Error creating a server", RED);
 		return false;
 	}
 	return true;
@@ -23,10 +24,10 @@ bool TCPManager::Initialize(const char* IP, int port)
 
 bool TCPManager::OpenSocket()
 {
-	M_ListenSocket = SDLNet_TCP_Open(&M_IP);//nullptr;
+	m_ListenSocket = SDLNet_TCP_Open(&m_IP);//nullptr;
 
-	if (!M_ListenSocket) {
-		Tools->Debug("Error opening socket for connection", RED);
+	if (!m_ListenSocket) {
+		m_Tools->Debug("Error opening socket for connection", RED);
 		return false;
 	}
 	return true;
@@ -34,59 +35,92 @@ bool TCPManager::OpenSocket()
 
 void TCPManager::ListenSocket()
 {
-	std::cout << "Server waiting for connection from client" << std::endl;
-	while (!M_ClientSocket) //waits for client to connect
+	std::cout << "Server waiting for connection from clients" << std::endl;
+	while (1)
 	{
-		M_ClientSocket = SDLNet_TCP_Accept(M_ListenSocket);
-		std::cout << "......" << std::endl;
-		SDL_Delay(500);
+		while (!m_ClientSocket)
+		{
+			sprintf_s(m_UserID, "User%d", m_UserCount);
+			m_ClientSocket = SDLNet_TCP_Accept(m_ListenSocket);
+			m_ClientList[m_UserID] = m_ClientSocket;
+		}
+		m_Tools->LogNoPause("Client connected!");
+		m_UserCount++;
+		m_ClientSocket = nullptr;
 	}
-	SDLNet_TCP_Close(M_ListenSocket); //Keep it open for multiple clients
-	Tools->Log("Client connected!");
+	//SDLNet_TCP_Close(m_ListenSocket); //Keep it open for multiple clients
 }
 
 bool TCPManager::Send(const std::string& message)
 {
-	M_MessageLength = message.length() + 1;
-	if (SDLNet_TCP_Send(M_ClientSocket, message.c_str(), M_MessageLength) < M_MessageLength) //is the retun value is < length of message it failled/ there's an error
+	if (m_ClientList.empty())
 	{
-		Tools->Debug("Error sending message to client", YELLOW);
 		return false;
+	}
+	else 
+	{
+		for (int i=0; i <m_UserCount; i++ )
+		{
+			sprintf_s(m_SendingLoopID, "User%d", i);
+			m_MessageLength = message.length() + 1;
+			if (SDLNet_TCP_Send(m_ClientList[m_SendingLoopID], message.c_str(), m_MessageLength) < m_MessageLength) //is the retun value is < length of message it failled/ there's an error
+			{
+				m_Tools->Debug("Error sending message to client", YELLOW);
+				return false;
+			}
+		}
 	}
 	return true;
 }
 
 bool TCPManager::Receive(std::string& message)
 {
-	char RecievedMessage[2000] = { '\0' };
-	if (SDLNet_TCP_Recv(M_ClientSocket, RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+	if (m_ClientList.size() == 0)
 	{
-		Tools->Debug("Error recieveing message", YELLOW);
 		return false;
 	}
-	else{ message = RecievedMessage; }
-	return true;
+	else
+	{
+		char RecievedMessage[2000] = { '\0' };
+		for (int i = 0; i < m_UserCount; i++)
+		{
+			sprintf_s(m_RecievingLoopID, "User%d", i);
+			if (SDLNet_TCP_Recv(m_ClientList[m_RecievingLoopID], RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+			{
+				m_Tools->Debug("Error recieveing message", YELLOW);
+				return false;
+			}
+			else { message = RecievedMessage; return true;}
+		}
+	}
+	//return false;
 }
 
 void TCPManager::CloseSocket()
 {
-	SDLNet_TCP_Close(M_ClientSocket);
+	SDLNet_TCP_Close(m_ClientSocket);
+	for (int i = 0; i < m_UserCount; i++)
+	{
+		sprintf_s(m_ClosingSocketID, "User%d", i);
+		SDLNet_TCP_Close(m_ClientList[m_ClosingSocketID]);
+	}
 }
 
 void TCPManager::ShutDown()
 {
 	SDLNet_Quit();
 	SDL_Quit();
-	delete Tools;
+	delete m_Tools;
 }
 
 TCPManager::TCPManager()
 {
-	M_MessageLength = 0;
-	M_ListenSocket = nullptr;
-	M_ClientSocket = nullptr;
-	Tools = nullptr;
-	M_IP = { 0,0 };
+	m_MessageLength = 0;
+	m_ListenSocket = nullptr;
+	m_ClientSocket = nullptr;
+	m_Tools = nullptr;
+	m_IP = { 0,0 };
+	m_UserCount = 0;
 }
 
 TCPManager::~TCPManager()

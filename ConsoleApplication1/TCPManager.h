@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_net.h>
 #include "TTools.h"
+#include <map>
 
 class TCPManager
 {
@@ -16,20 +17,27 @@ public:
 	void ShutDown();
 	TCPManager();
 	~TCPManager();
+	int GetUserCount() { return m_UserCount; }
 private:
-	IPaddress M_IP;
+	IPaddress m_IP;
 
-	TCPsocket M_ListenSocket;
-	TCPsocket M_ClientSocket;
+	TCPsocket m_ListenSocket;
+	TCPsocket m_ClientSocket;
 
 	std::string message;
 
-	int M_MessageLength;
+	int m_MessageLength;
 
 	const int C_PORT = 1234;
 	const int C_BUFFER = 2000;
 
-	TTools* Tools;
+	TTools* m_Tools;
+	int m_UserCount;
+	std::map<std::string, TCPsocket> m_ClientList;
+	char m_UserID[10] = { '\0' };
+	char m_SendingLoopID[10] = { '\0' };
+	char m_RecievingLoopID[10] = { '\0' };
+	char m_ClosingSocketID[10] = { '\0' };
 
 };
 

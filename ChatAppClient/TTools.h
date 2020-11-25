@@ -19,9 +19,9 @@ public:
 	void ReadFile(std::string FilePath);
 	std::string GetIp(std::string index);
 private:
-	std::fstream M_OptionsFile;
-	std::string M_OptionLine;
-	std::map<std::string, std::string> M_SettupOptions;
+	std::fstream m_OptionsFile;
+	std::string m_OptionLine;
+	std::map<std::string, std::string> m_SettupOptions;
 
 };
 

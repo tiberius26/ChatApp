@@ -13,7 +13,7 @@ bool TCPManager::Initialize(const char* IP, int port)
 		Tools->Debug("SDLNet could not initialize", RED);
 		return false;
 	}
-	if (SDLNet_ResolveHost(&M_IP, IP, port) == -1)//the port  //null because we are the server
+	if (SDLNet_ResolveHost(&m_IP, IP, port) == -1)//the port  //null because we are the server
 	{
 		Tools->Debug("Error creating a client", RED);
 		return false;
@@ -23,9 +23,9 @@ bool TCPManager::Initialize(const char* IP, int port)
 
 bool TCPManager::OpenSocket()
 {
-	M_Socket = SDLNet_TCP_Open(&M_IP);//nullptr;
+	m_Socket = SDLNet_TCP_Open(&m_IP);//nullptr;
 
-	if (!M_Socket) {
+	if (!m_Socket) {
 		Tools->Debug("Error opening socket for connection", RED);
 		return false;
 	}
@@ -35,8 +35,8 @@ bool TCPManager::OpenSocket()
 
 bool TCPManager::Send(const std::string& message)
 {
-	M_MessageLength = message.length() + 1;
-	if (SDLNet_TCP_Send(M_Socket, message.c_str(), M_MessageLength) < M_MessageLength) //is the retun value is < length of message it failled/ there's an error
+	m_MessageLength = message.length() + 1;
+	if (SDLNet_TCP_Send(m_Socket, message.c_str(), m_MessageLength) < m_MessageLength) //is the retun value is < length of message it failled/ there's an error
 	{
 		Tools->Debug("Error sending message to client", YELLOW);
 		return false;
@@ -47,7 +47,7 @@ bool TCPManager::Send(const std::string& message)
 bool TCPManager::Receive(std::string& message)
 {
 	char RecievedMessage[2000] = { '\0' };
-	if (SDLNet_TCP_Recv(M_Socket, RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
+	if (SDLNet_TCP_Recv(m_Socket, RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 	{
 		Tools->Debug("Error recieveing message", YELLOW);
 		return false;
@@ -58,7 +58,7 @@ bool TCPManager::Receive(std::string& message)
 
 void TCPManager::CloseSocket()
 {
-	SDLNet_TCP_Close(M_Socket);
+	SDLNet_TCP_Close(m_Socket);
 }
 
 void TCPManager::ShutDown()
@@ -70,10 +70,10 @@ void TCPManager::ShutDown()
 
 TCPManager::TCPManager()
 {
-	M_Socket = nullptr;
-	M_MessageLength = 0;
+	m_Socket = nullptr;
+	m_MessageLength = 0;
 	Tools = nullptr;
-	M_IP = {0,0};
+	m_IP = {0,0};
 }
 
 TCPManager::~TCPManager()
