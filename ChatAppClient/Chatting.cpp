@@ -2,7 +2,7 @@
 
 void Chatting::ChatLoop(TCPManager& ClientSide, std::string UserName)
 {
-	m_UserName = UserName;
+	//m_UserName = UserName;
 	m_ClientLocal = &ClientSide;
 	m_SendingThread = std::thread(&Chatting::Send, this);
 	m_ListeningThread = std::thread(&Chatting::Receive, this);
@@ -29,7 +29,7 @@ void Chatting::Send()
 	{
 		std::cout << "> ";
 		std::getline(std::cin, m_SentMessage);
-		m_SentMessage = m_UserName + ":" + m_SentMessage;
+		//m_SentMessage = m_UserName + ":" + m_SentMessage;
 		if (!m_ClientLocal->Send(m_SentMessage))
 		{
 			m_Tools->Debug("Can't send message", RED);

@@ -11,8 +11,8 @@ public:
 	bool Initialize(const char* IP, int port);
 	bool OpenSocket();
 	void ListenSocket();
-	bool Send(const std::string& message);
-	bool Receive(std::string& message);
+	bool Send(const std::string& message, std::string ToWho);
+	bool Receive(std::string& message, std::string ToWho);
 	void CloseSocket();
 	void ShutDown();
 	TCPManager();

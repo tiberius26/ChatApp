@@ -52,7 +52,7 @@ void TCPManager::ListenSocket()
 	//SDLNet_TCP_Close(m_ListenSocket); //Keep it open for multiple clients
 }
 
-bool TCPManager::Send(const std::string& message)
+bool TCPManager::Send(const std::string& message, std::string ToWho)
 {
 	if (m_ClientList.empty())
 	{
@@ -60,21 +60,17 @@ bool TCPManager::Send(const std::string& message)
 	}
 	else 
 	{
-		for (int i=0; i <m_UserCount; i++ )
+		m_MessageLength = message.length() + 1;
+		if (SDLNet_TCP_Send(m_ClientList[ToWho], message.c_str(), m_MessageLength) < m_MessageLength) //is the retun value is < length of message it failled/ there's an error
 		{
-			m_SendingLoopID = "User" + std::to_string(i);
-			m_MessageLength = message.length() + 1;
-			if (SDLNet_TCP_Send(m_ClientList[m_SendingLoopID], message.c_str(), m_MessageLength) < m_MessageLength) //is the retun value is < length of message it failled/ there's an error
-			{
-				m_Tools->Debug("Error sending message to client", YELLOW);
-				return false;
-			}
+			m_Tools->Debug("Error sending message to client", YELLOW);
+			return false;
 		}
 	}
 	//return true;
 }
 
-bool TCPManager::Receive(std::string& message)
+bool TCPManager::Receive(std::string& message, std::string ToWho)
 {
 	if (m_ClientList.size() == 0)
 	{
@@ -83,16 +79,13 @@ bool TCPManager::Receive(std::string& message)
 	else
 	{
 		char RecievedMessage[2000] = { '\0' };
-		for (int i = 0; i < m_UserCount; i++)
+		if (SDLNet_TCP_Recv(m_ClientList[ToWho], RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
 		{
-			m_RecievingLoopID = "User" + std::to_string(i);
-			if (SDLNet_TCP_Recv(m_ClientList[m_RecievingLoopID], RecievedMessage, C_BUFFER) <= 0) //is the retun value is < length of message it failled/ there's an error
-			{
-				m_Tools->Debug("Error recieveing message", YELLOW);
-				return false;
-			}
-			else { message = RecievedMessage;}
+			m_Tools->Debug("Error recieveing message", YELLOW);
+			return false;
 		}
+		else { message = RecievedMessage;}
+
 		//return true;
 	}
 	//return false;

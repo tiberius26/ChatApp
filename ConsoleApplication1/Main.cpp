@@ -35,18 +35,22 @@ int main(int argc, char* argv[])
 	std::cout << "========================================" << std::endl;
 	//create a friendly message for the client
 
-	message = "Welcome to the chat";
+	//message = "Welcome to the chat";
 
-	//we need length of message in order to send data
-	int MessageLength = message.length() + 1; //+1 because C adds a null at the end of strings +1 terminates null aka '\0'
-	//send message via open sockets which are opened above
-	if (ServerSide->Send(message))
+	////we need length of message in order to send data
+	//int MessageLength = message.length() + 1; //+1 because C adds a null at the end of strings +1 terminates null aka '\0'
+	////send message via open sockets which are opened above
+	//if (ServerSide->Send(message))
+	//{
+	//	Tools->LogNoPause("Welcome message sent"); 
+	//}
+
+	while (!Chat->GetIsChatOver()) 
 	{
-		Tools->LogNoPause("Welcome message sent"); 
+		Chat->ChatLoop(*ServerSide);
+		//std::cout << ".";
+		//Chat->Delay(500);
 	}
-	
-	Chat->ChatLoop(*ServerSide);
-
 
 	ServerSide->CloseSocket();
 	ServerSide->ShutDown();
