@@ -13,6 +13,9 @@ int main(int argc, char* argv[])
 
 	Tools->ReadFile("Data/Options.ini");
 	std::string IP = Tools->GetIp("Ip");
+	std::cout << "The connection will be made using the IP:" << IP << std::endl;
+	std::cout << "If you want to use another IP, go to Data/Options.ini, then restart the application" << std::endl;
+	system("pause");
 	//std::string IP = "127.0.0.1";
 	ClientSide.Initialize(IP.c_str(), 1234);
 	ClientSide.OpenSocket();
@@ -20,8 +23,11 @@ int main(int argc, char* argv[])
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
+	std::string Username;
+	std::cout << "Please type a username:";
+	std::cin >> Username;
 
-	Chat->ChatLoop(ClientSide);
+	Chat->ChatLoop(ClientSide, Username);
 
 	ClientSide.CloseSocket();
 	ClientSide.ShutDown();
