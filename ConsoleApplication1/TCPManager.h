@@ -18,6 +18,7 @@ public:
 	TCPManager();
 	~TCPManager();
 	int GetUserCount() { return m_UserCount; }
+	void TurnListeningOff() { m_AmListeningForUsers = false;}
 private:
 	IPaddress m_IP;
 
@@ -38,6 +39,9 @@ private:
 	std::string m_SendingLoopID;
 	std::string m_RecievingLoopID;
 	std::string m_ClosingSocketID;
+	std::string CheckEnd() { return m_CheckMessage; };
+	bool m_AmListeningForUsers;
+	std::string m_CheckMessage;
 
 };
 

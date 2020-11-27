@@ -12,12 +12,13 @@ int main(int argc, char* argv[])
 	TCPManager ClientSide;
 
 	Tools->ReadFile("Data/Options.ini");
-	std::string IP = Tools->GetIp("Ip");
+	std::string IP = Tools->GetOptions("Ip");
+	std::string Port = Tools->GetOptions("Port");
 	std::cout << "The connection will be made using the IP:" << IP << std::endl;
 	std::cout << "If you want to use another IP, go to Data/Options.ini, then restart the application" << std::endl;
 	system("pause");
 	//std::string IP = "127.0.0.1";
-	ClientSide.Initialize(IP.c_str(), 1234);
+	ClientSide.Initialize(IP.c_str(), std::stoi(Port));
 	ClientSide.OpenSocket();
 	system("cls");
 	std::cout << "========================================" << std::endl;
@@ -34,7 +35,8 @@ int main(int argc, char* argv[])
 	Chat->CloseChat();
 	delete Tools;
 	delete Chat;
-
+	system("cls");
+	std::cout << "The chat has been closed" << std::endl;
 	system("Pause");
 	return 0;
 }

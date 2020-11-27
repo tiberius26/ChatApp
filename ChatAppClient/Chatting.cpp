@@ -25,7 +25,7 @@ void Chatting::Receive()
 
 void Chatting::Send()
 {
-	while (m_SentMessage != "end")
+	while (m_RecievedMessage != "end")
 	{
 		std::cout << "> ";
 		std::getline(std::cin, m_SentMessage);

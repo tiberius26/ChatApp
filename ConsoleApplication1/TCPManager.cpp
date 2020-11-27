@@ -36,10 +36,15 @@ bool TCPManager::OpenSocket()
 void TCPManager::ListenSocket()
 {
 	std::cout << "Server waiting for connection from clients" << std::endl;
-	while (1)
+	while (m_AmListeningForUsers)
 	{
 		while (!m_ClientSocket)
 		{
+			if (CheckEnd() == "end")
+			{
+				m_AmListeningForUsers = false;
+				break;
+			}
 			m_UserID = "User" + std::to_string(m_UserCount);
 			//sprintf_s(m_UserID, "User%d", m_UserCount);
 			m_ClientSocket = SDLNet_TCP_Accept(m_ListenSocket);
@@ -49,7 +54,8 @@ void TCPManager::ListenSocket()
 		m_UserCount++;
 		m_ClientSocket = nullptr;
 	}
-	//SDLNet_TCP_Close(m_ListenSocket); //Keep it open for multiple clients
+	SDLNet_TCP_Close(m_ListenSocket);
+	std::string test;
 }
 
 bool TCPManager::Send(const std::string& message, std::string ToWho)
@@ -66,13 +72,14 @@ bool TCPManager::Send(const std::string& message, std::string ToWho)
 			m_Tools->Debug("Error sending message to client", YELLOW);
 			return false;
 		}
+		if (message == "end") { m_CheckMessage = message; }
 	}
-	//return true;
+	return true;
 }
 
 bool TCPManager::Receive(std::string& message, std::string ToWho)
 {
-	if (m_ClientList.size() == 0)
+	if (m_ClientList.empty())
 	{
 		return false;
 	}
@@ -85,10 +92,11 @@ bool TCPManager::Receive(std::string& message, std::string ToWho)
 			return false;
 		}
 		else { message = RecievedMessage;}
+		if (message == "end") { m_CheckMessage = message; }
 
 		//return true;
 	}
-	//return false;
+	return true;
 }
 
 void TCPManager::CloseSocket()
@@ -117,6 +125,7 @@ TCPManager::TCPManager()
 	m_Tools = nullptr;
 	m_IP = { 0,0 };
 	m_UserCount = 0;
+	m_AmListeningForUsers = true;
 }
 
 TCPManager::~TCPManager()

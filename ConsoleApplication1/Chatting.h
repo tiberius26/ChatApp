@@ -13,7 +13,7 @@ public:
 	//void Receive(TCPManager& ServerSide);
 	//void Send(TCPManager& ServerSide);
 	void Delay(int DelayBy) { SDL_Delay(500); }
-
+	void SaveLog(int LogCount);
 private:
 	std::string m_SentMessage;
 	std::string m_RecievedMessage;
@@ -29,5 +29,7 @@ private:
 	/*void test();*/
 	std::map<std::string, std::thread>m_ListeningThreads;
 	std::map<std::string, std::thread>m_SendingThreads;
+
+	std::string m_ChatLog;
 };
 

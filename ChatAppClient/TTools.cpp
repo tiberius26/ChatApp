@@ -83,7 +83,7 @@ void TTools::ReadFile(std::string FilePath)
 
 }
 
-std::string TTools::GetIp(std::string index)
+std::string TTools::GetOptions(std::string index)
 {
 	return m_SettupOptions[index];
 }

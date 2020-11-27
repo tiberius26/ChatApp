@@ -17,7 +17,7 @@ public:
 	void Initialize();
 	void LogNoPause(std::string Message);
 	void ReadFile(std::string FilePath);
-	std::string GetIp(std::string index);
+	std::string GetOptions(std::string index);
 private:
 	std::fstream m_OptionsFile;
 	std::string m_OptionLine;

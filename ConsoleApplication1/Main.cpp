@@ -11,8 +11,9 @@ int main(int argc, char* argv[])
 	TTools* Tools = new TTools;
 	Chatting* Chat = new Chatting;
 	TCPManager* ServerSide = new TCPManager;
+	Tools->ReadFile("Data/ServerOptions.ini");
 	//std::string IP = nullptr;
-	ServerSide->Initialize(nullptr, 1234);
+	ServerSide->Initialize(nullptr, std::stoi(Tools->GetOptions("Port")));
 	
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
@@ -51,13 +52,16 @@ int main(int argc, char* argv[])
 		//std::cout << ".";
 		//Chat->Delay(500);
 	}
-
+	ListeningThread.~thread();
+	ServerSide->TurnListeningOff();
 	ServerSide->CloseSocket();
 	ServerSide->ShutDown();
 	Chat->CloseChat();
+	Chat->SaveLog(std::stoi(Tools->GetOptions("LogCount")));
 	delete Tools;
 	delete Chat;
 	delete ServerSide;
-	system("Pause");
+	std::cout << "The chat has been closed and a copy of the conversation has been made in Data/Logs" << std::endl;
+	//system("Pause");
 	return 0;
 }
