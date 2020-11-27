@@ -1,6 +1,7 @@
 #include "TCPManager.h"
 
-bool TCPManager::Initialize(const char* IP, int port)
+//Setting SDL and TTools up
+bool TCPManager::Initialize(const char* IP, int port) //IP can be found and edited in Data/Options.ini
 {
 	Tools = new TTools;
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
@@ -13,7 +14,7 @@ bool TCPManager::Initialize(const char* IP, int port)
 		Tools->Debug("SDLNet could not initialize", RED);
 		return false;
 	}
-	if (SDLNet_ResolveHost(&m_IP, IP, port) == -1)//the port  //null because we are the server
+	if (SDLNet_ResolveHost(&m_IP, IP, port) == -1)
 	{
 		Tools->Debug("Error creating a client", RED);
 		return false;
@@ -21,9 +22,10 @@ bool TCPManager::Initialize(const char* IP, int port)
 	return true;
 }
 
+//opening socket for connection to the server
 bool TCPManager::OpenSocket()
 {
-	m_Socket = SDLNet_TCP_Open(&m_IP);//nullptr;
+	m_Socket = SDLNet_TCP_Open(&m_IP);
 
 	if (!m_Socket) {
 		Tools->Debug("Error opening socket for connection", RED);
@@ -33,6 +35,7 @@ bool TCPManager::OpenSocket()
 	return true;
 }
 
+//for setting messages
 bool TCPManager::Send(const std::string& message)
 {
 	m_MessageLength = message.length() + 1;
@@ -44,6 +47,7 @@ bool TCPManager::Send(const std::string& message)
 	return true;
 }
 
+//for receiving messages
 bool TCPManager::Receive(std::string& message)
 {
 	char RecievedMessage[2000] = { '\0' };
@@ -56,11 +60,13 @@ bool TCPManager::Receive(std::string& message)
 	return true;
 }
 
+//closing socket
 void TCPManager::CloseSocket()
 {
 	SDLNet_TCP_Close(m_Socket);
 }
 
+//shutting SDL and TTools down
 void TCPManager::ShutDown()
 {
 	SDLNet_Quit();
@@ -68,6 +74,7 @@ void TCPManager::ShutDown()
 	delete Tools;
 }
 
+//constructer
 TCPManager::TCPManager()
 {
 	m_Socket = nullptr;
@@ -76,6 +83,7 @@ TCPManager::TCPManager()
 	m_IP = {0,0};
 }
 
+//deconstructer
 TCPManager::~TCPManager()
 {
 }

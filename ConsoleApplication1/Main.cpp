@@ -4,64 +4,73 @@
 #include "TCPManager.h"
 #include "Chatting.h"
 #include <thread>
-//Message to be sent to client(s)
-std::string message;
+//Any warnings left are not caused by this app, SDL
+
 int main(int argc, char* argv[])
 {
+	//Creating pointers to classes
 	TTools* Tools = new TTools;
 	Chatting* Chat = new Chatting;
 	TCPManager* ServerSide = new TCPManager;
+
+	//Reading options
 	Tools->ReadFile("Data/ServerOptions.ini");
-	//std::string IP = nullptr;
+
+	//Initializing server
 	ServerSide->Initialize(nullptr, std::stoi(Tools->GetOptions("Port")));
 	
+	//Siaplay
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
 
+	//Opening sockets
 	ServerSide->OpenSocket();
-	std::thread ListeningThread(&TCPManager::ListenSocket, ServerSide);
-	ListeningThread.detach();
-	//ServerSide.ListenSocket();
 
-	std::cout << "Waiting for connection" << std::endl;
-	while (ServerSide->GetUserCount() < 1)
+	//Attaching listening to a socker for milti-client
+	std::thread ListeningThread(&TCPManager::ListenSocket, ServerSide);
+	ListeningThread.detach(); //running it in the background
+
+	std::cout << "Waiting for connection" << std::endl;//message
+
+	while (ServerSide->GetUserCount() < 1) //loop to prevent the app from starting without users
 	{
-		//std::cout << "......" << std::endl;
+		//std::cout << "......" << std::endl; //uncomment to see working
 	}
 
+	//New display
 	system("cls");
 	std::cout << "========================================" << std::endl;
 	std::cout << "=     BSF Communications department    =" << std::endl;
 	std::cout << "========================================" << std::endl;
-	//create a friendly message for the client
 
-	//message = "Welcome to the chat";
-
-	////we need length of message in order to send data
-	//int MessageLength = message.length() + 1; //+1 because C adds a null at the end of strings +1 terminates null aka '\0'
-	////send message via open sockets which are opened above
-	//if (ServerSide->Send(message))
-	//{
-	//	Tools->LogNoPause("Welcome message sent"); 
-	//}
-
+	//Chat loop
 	while (!Chat->GetIsChatOver()) 
 	{
 		Chat->ChatLoop(*ServerSide);
-		//std::cout << ".";
-		//Chat->Delay(500);
 	}
+
+	//Closing everything
 	ListeningThread.~thread();
 	ServerSide->TurnListeningOff();
 	ServerSide->CloseSocket();
 	ServerSide->ShutDown();
 	Chat->CloseChat();
+
+	//Saving conversation Log
 	Chat->SaveLog(std::stoi(Tools->GetOptions("LogCount")));
+
+	//Deleting pointers
 	delete Tools;
 	delete Chat;
 	delete ServerSide;
+
+	//Last display
+	system("cls");
+	std::cout << "========================================" << std::endl;
+	std::cout << "=     BSF Communications department    =" << std::endl;
+	std::cout << "========================================" << std::endl;
 	std::cout << "The chat has been closed and a copy of the conversation has been made in Data/Logs" << std::endl;
-	//system("Pause");
+	system("Pause");
 	return 0;
 }

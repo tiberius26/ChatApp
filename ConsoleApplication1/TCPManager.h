@@ -8,40 +8,51 @@
 class TCPManager
 {
 public:
-	bool Initialize(const char* IP, int port);
-	bool OpenSocket();
-	void ListenSocket();
-	bool Send(const std::string& message, std::string ToWho);
-	bool Receive(std::string& message, std::string ToWho);
-	void CloseSocket();
-	void ShutDown();
 	TCPManager();
 	~TCPManager();
-	int GetUserCount() { return m_UserCount; }
-	void TurnListeningOff() { m_AmListeningForUsers = false;}
+	//Bool because it can fail
+	bool Initialize(const char* IP, int port);
+	bool OpenSocket();
+	bool Send(const std::string& message, std::string ToWho);
+	bool Receive(std::string& message, std::string ToWho);
+
+	void ListenSocket();
+	void CloseSocket();
+	void ShutDown();
+	void TurnListeningOff() { m_AmListeningForUsers = false;} //one line set
+
+	int GetUserCount() { return m_UserCount; } //one line get
 private:
+	//IP 
 	IPaddress m_IP;
 
+	//Sockets
 	TCPsocket m_ListenSocket;
 	TCPsocket m_ClientSocket;
 
-	std::string message;
+	//Strings:
+	std::string m_UserID;
+	std::string m_ClosingSocketID;
+	std::string m_CheckMessage;
 
+	//Ints:
 	int m_MessageLength;
-
+	int m_UserCount;
 	const int C_PORT = 1234;
 	const int C_BUFFER = 2000;
 
+	//Pointers:
 	TTools* m_Tools;
-	int m_UserCount;
+
+	//Maps:
 	std::map<std::string, TCPsocket> m_ClientList;
-	std::string m_UserID;
-	std::string m_SendingLoopID;
-	std::string m_RecievingLoopID;
-	std::string m_ClosingSocketID;
-	std::string CheckEnd() { return m_CheckMessage; };
+
+	//Booleans:
 	bool m_AmListeningForUsers;
-	std::string m_CheckMessage;
+	
+	//Private methods:
+	std::string CheckEnd() { return m_CheckMessage; };
+
 
 };
 

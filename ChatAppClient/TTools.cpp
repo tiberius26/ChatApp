@@ -1,11 +1,13 @@
 #include "TTools.h"
 
+//Constructer
 TTools::TTools()
 {
 	Initialize();
 }
 
-void TTools::Debug(std::string Message, ErrorRank Colour)
+//For errors
+void TTools::Debug(std::string Message, ErrorRank Colour) // Enum class causes errors so it was ommited
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Colour);
 
@@ -15,6 +17,7 @@ void TTools::Debug(std::string Message, ErrorRank Colour)
 	system("Pause");
 }
 
+//For messages
 void TTools::Log(std::string Message)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -25,6 +28,7 @@ void TTools::Log(std::string Message)
 	system("Pause");
 }
 
+//For messages with 1 value
 void TTools::Log(std::string Message, int X)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -35,6 +39,7 @@ void TTools::Log(std::string Message, int X)
 	system("Pause");
 }
 
+//For messages with 2 values
 void TTools::Log(std::string Message, int X, int Y)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -45,6 +50,7 @@ void TTools::Log(std::string Message, int X, int Y)
 	system("Pause");
 }
 
+//For messages with 3 values
 void TTools::Log(std::string Message, int X, int Y, int Z)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -55,11 +61,13 @@ void TTools::Log(std::string Message, int X, int Y, int Z)
 	system("Pause");
 }
 
+//Setting default colour console for the app
 void TTools::Initialize()
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DEFAULT);
 }
 
+//For messages with no pause
 void TTools::LogNoPause(std::string Message)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -69,6 +77,7 @@ void TTools::LogNoPause(std::string Message)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DEFAULT);
 }
 
+//Reading from a file
 void TTools::ReadFile(std::string FilePath)
 {
 	m_OptionsFile.open(FilePath);
@@ -83,6 +92,7 @@ void TTools::ReadFile(std::string FilePath)
 
 }
 
+//Getting information stored in map
 std::string TTools::GetOptions(std::string index)
 {
 	return m_SettupOptions[index];

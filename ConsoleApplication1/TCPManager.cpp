@@ -1,8 +1,8 @@
 #include "TCPManager.h"
 
+//Initializing SDL and tools
 bool TCPManager::Initialize(const char* IP, int port)
 {
-
 	m_Tools = new TTools;
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 	{
@@ -14,7 +14,7 @@ bool TCPManager::Initialize(const char* IP, int port)
 		m_Tools->Debug("SDLNet could not initialize", RED);
 		return false;
 	}
-	if (SDLNet_ResolveHost(&m_IP, IP, port) == -1)//the port  //null because we are the server
+	if (SDLNet_ResolveHost(&m_IP, IP, port) == -1) //null because this is the server
 	{
 		m_Tools->Debug("Error creating a server", RED);
 		return false;
@@ -22,9 +22,10 @@ bool TCPManager::Initialize(const char* IP, int port)
 	return true;
 }
 
+//Opening the listening socket
 bool TCPManager::OpenSocket()
 {
-	m_ListenSocket = SDLNet_TCP_Open(&m_IP);//nullptr;
+	m_ListenSocket = SDLNet_TCP_Open(&m_IP);//nullptr because this is the server
 
 	if (!m_ListenSocket) {
 		m_Tools->Debug("Error opening socket for connection", RED);
@@ -33,53 +34,55 @@ bool TCPManager::OpenSocket()
 	return true;
 }
 
+//Listening for users
 void TCPManager::ListenSocket()
 {
 	std::cout << "Server waiting for connection from clients" << std::endl;
-	while (m_AmListeningForUsers)
+	while (m_AmListeningForUsers)//to keep the thread running
 	{
 		while (!m_ClientSocket)
 		{
-			if (CheckEnd() == "end")
+			if (CheckEnd() == "end") //to make sure the code stops running when "end" sent 
 			{
 				m_AmListeningForUsers = false;
-				break;
+				break; // breaks out of the while loop
 			}
-			m_UserID = "User" + std::to_string(m_UserCount);
-			//sprintf_s(m_UserID, "User%d", m_UserCount);
+
+			m_UserID = "User" + std::to_string(m_UserCount); 
 			m_ClientSocket = SDLNet_TCP_Accept(m_ListenSocket);
-			m_ClientList[m_UserID] = m_ClientSocket;
+			m_ClientList[m_UserID] = m_ClientSocket;//adds the user to a user list
 		}
 		m_Tools->LogNoPause("Client connected!");
-		m_UserCount++;
+		m_UserCount++; //to ensure taht each user is different
 		m_ClientSocket = nullptr;
 	}
-	SDLNet_TCP_Close(m_ListenSocket);
-	std::string test;
+	SDLNet_TCP_Close(m_ListenSocket);//closing the listening socket when the app needs to shut down
 }
 
+//Sending messages
 bool TCPManager::Send(const std::string& message, std::string ToWho)
 {
-	if (m_ClientList.empty())
+	if (m_ClientList.empty())//checks if there are users
 	{
 		return false;
 	}
 	else 
 	{
-		m_MessageLength = message.length() + 1;
+		m_MessageLength = message.length() + 1; //to determine the size of the package
 		if (SDLNet_TCP_Send(m_ClientList[ToWho], message.c_str(), m_MessageLength) < m_MessageLength) //is the retun value is < length of message it failled/ there's an error
 		{
 			m_Tools->Debug("Error sending message to client", YELLOW);
 			return false;
 		}
-		if (message == "end") { m_CheckMessage = message; }
+		if (message == "end") { m_CheckMessage = message; } // to ensure that listening stops
 	}
 	return true;
 }
 
+//Receiving messages
 bool TCPManager::Receive(std::string& message, std::string ToWho)
 {
-	if (m_ClientList.empty())
+	if (m_ClientList.empty())//checks if there are users
 	{
 		return false;
 	}
@@ -91,25 +94,26 @@ bool TCPManager::Receive(std::string& message, std::string ToWho)
 			m_Tools->Debug("Error recieveing message", YELLOW);
 			return false;
 		}
-		else { message = RecievedMessage;}
-		if (message == "end") { m_CheckMessage = message; }
+		else { message = RecievedMessage;} //stores the recieved message before it is deleted
+		if (message == "end") { m_CheckMessage = message; }// to ensure that listening stops
 
 		//return true;
 	}
 	return true;
 }
 
+//Closign client sockets
 void TCPManager::CloseSocket()
 {
 	SDLNet_TCP_Close(m_ClientSocket);
-	for (int i = 0; i < m_UserCount; i++)
+	for (int i = 0; i < m_UserCount; i++) //looping theouch the clients
 	{
 		m_ClosingSocketID = "User" + std::to_string(i);
-		//sprintf_s(m_ClosingSocketID, "User%d", i);
 		SDLNet_TCP_Close(m_ClientList[m_ClosingSocketID]);
 	}
 }
 
+//Closes SDL and deletes TTools pointer
 void TCPManager::ShutDown()
 {
 	SDLNet_Quit();
@@ -117,6 +121,7 @@ void TCPManager::ShutDown()
 	delete m_Tools;
 }
 
+//Constructer
 TCPManager::TCPManager()
 {
 	m_MessageLength = 0;
@@ -128,6 +133,7 @@ TCPManager::TCPManager()
 	m_AmListeningForUsers = true;
 }
 
+//Deconstructer
 TCPManager::~TCPManager()
 {
 }

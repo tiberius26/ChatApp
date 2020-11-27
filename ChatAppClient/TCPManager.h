@@ -7,25 +7,29 @@
 class TCPManager
 {
 public:
+	TCPManager();
+	~TCPManager();
+
+	void CloseSocket();
+	void ShutDown();
+
 	bool Initialize(const char* IP, int port);
 	bool OpenSocket();
 	bool Send(const std::string& message);
 	bool Receive(std::string& message);
-	void CloseSocket();
-	void ShutDown();
-	TCPManager();
-	~TCPManager();
+
 private:
+	//IP
 	IPaddress m_IP;
 
+	//Sockets:
 	TCPsocket m_Socket;
 
-	std::string message;
-
+	//Ints:
 	int m_MessageLength;
-
 	const int C_BUFFER = 2000;
 
+	//Pointers:
 	TTools* Tools;
 
 };

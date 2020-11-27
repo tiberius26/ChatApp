@@ -2,24 +2,30 @@
 #include "TTools.h"
 #include "TCPManager.h"
 #include <thread>
+#include <Windows.h>
 class Chatting
 {
 public:
-	void ChatLoop(TCPManager& ClientSide, std::string UserName);
 	Chatting();
+	
+	void ChatLoop(TCPManager& ClientSide);
 	void CloseChat();
-	//void Receive(TCPManager& ServerSide);
-	//void Send(TCPManager& ServerSide);
 
 private:
+	//Strings:
 	std::string m_SentMessage;
 	std::string m_RecievedMessage;
-	TTools* m_Tools;
+
+	//Threads:
 	std::thread m_ListeningThread;
 	std::thread m_SendingThread;
+
+	//Pointers:
+	TTools* m_Tools;
+	TCPManager* m_ClientLocal;
+
+	//Private methods:
 	void Receive();
 	void Send();
-	TCPManager* m_ClientLocal;
-	std::string m_UserName;
 };
 

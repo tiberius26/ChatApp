@@ -2,19 +2,21 @@
 
 TTools::TTools()
 {
-	Initialize();
+	Initialize(); //initializing variables when creating a TTools object
 }
 
-void TTools::Debug(std::string Message, ErrorRank Colour)
+//For errors
+void TTools::Debug(std::string Message, ErrorRank Colour) // using Enum class breaks parts of the code, enum works just fine
 {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Colour);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Colour); //change colour based on error
 
 	std::cout << "Error: " << Message << std::endl;
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DEFAULT);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DEFAULT); //change back to default
 	system("Pause");
 }
 
+//For messages
 void TTools::Log(std::string Message)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -25,6 +27,7 @@ void TTools::Log(std::string Message)
 	system("Pause");
 }
 
+//For messages with 1 value
 void TTools::Log(std::string Message, int X)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -35,6 +38,7 @@ void TTools::Log(std::string Message, int X)
 	system("Pause");
 }
 
+//For messages with 2 values
 void TTools::Log(std::string Message, int X, int Y)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -45,6 +49,7 @@ void TTools::Log(std::string Message, int X, int Y)
 	system("Pause");
 }
 
+//For messages with 3 values
 void TTools::Log(std::string Message, int X, int Y, int Z)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -55,11 +60,13 @@ void TTools::Log(std::string Message, int X, int Y, int Z)
 	system("Pause");
 }
 
+//ChanginG the console windown form the very begining
 void TTools::Initialize()
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DEFAULT);
 }
 
+//Message without pausing
 void TTools::LogNoPause(std::string Message)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
@@ -69,20 +76,22 @@ void TTools::LogNoPause(std::string Message)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DEFAULT);
 }
 
+//Reading a file and storing it's contents in a map
 void TTools::ReadFile(std::string FilePath)
 {
 	m_OptionsFile.open(FilePath);
-	while (!m_OptionsFile.eof())//loads te stats and stores them in a map
+	while (!m_OptionsFile.eof())//loads the variables and stores them in a map
 	{
 		std::getline(m_OptionsFile, m_OptionLine);
 		auto LineSplitter = m_OptionLine.find("=");
-		std::string Id = m_OptionLine.substr(0, LineSplitter);//where to start and how much to go
+		std::string Id = m_OptionLine.substr(0, LineSplitter);
 		m_SettupOptions[Id] = m_OptionLine.substr(LineSplitter + 1, m_OptionLine.size() - (LineSplitter + 1));
 	}
-	m_OptionsFile.close();
+	m_OptionsFile.close();//closing the file
 
 }
 
+//Getting information extracted from the file
 std::string TTools::GetOptions(std::string index)
 {
 	return m_SettupOptions[index];
